@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript">
+
+        var BLOCK_SIZE = 80;
+        var BORDER_SIZE = 1;
+
+        var reader = new FileReader();
+
+        function prepareBoard(event) {
+            var board = document.getElementById("board");
+            board.style.width = 4 * BLOCK_SIZE + "px";
+            board.style.height = 5 * BLOCK_SIZE + "px";
+            board.style.border = BORDER_SIZE + "px solid black";
+            reader.onload = loadLayout;
+            reader.readAsText(event.target.files[0]);
+        }
+
+        // LAYOUT CREATION
+
+        function loadLayout(event) {
+            var lines = reader.result.split("\n");
+            var id = 0;
+            for (var line in lines) {
+                var info = lines[line].split(",");
+                if (info.length < 4) continue;
+                var left = parseInt(info[0]);
+                var top = parseInt(info[1]);
+                var width = parseInt(info[2]);
+                var height = parseInt(info[3]);
+                if (left == NaN || width == NaN) continue;
+                if (top == NaN || height == NaN) continue;
+                // All data present; add block.
+                addRectangle(left, top, width, height, id);
+                id++;
+            }
+        }
+
+        function addRectangle(left, top, width, height, id) {
+            var rectangle = document.createElement("div");
+            rectangle.setAttribute("style", "position: absolute; width: " + BLOCK_SIZE * width + "px; " +
+                    "height: " + BLOCK_SIZE * height + "px; top:" + BLOCK_SIZE * top + "px; " +
+                    "left:" + BLOCK_SIZE * left + "px;");
+            // Ease the access to position properties.
+            rectangle.getLeft = function(){return parseInt(this.style.left)};
+            rectangle.getTop = function(){return parseInt(this.style.top)};
+            rectangle.getWidth = function(){return parseInt(this.style.width)};
+            rectangle.getHeight = function(){return parseInt(this.style.height)};
+            // Setup the rectangle.
+            rectangle.style.backgroundColor = getRandomColor();
+            rectangle.id = id;
+            rectangle.selected = false;
+            rectangle.onclick = updateSelection;
+            document.getElementById("board").appendChild(rectangle);
+        }
+
+        // EVENT HANDLERS
+
+        function updateSelection(event) {
+            var brick = document.getElementById("board").firstChild;
+            brick.selected = false;
+            while (brick != undefined) {
+                brick.selected = false;
+                brick = brick.nextSibling
+            }
+            event.toElement.selected = true;
+        }
+
+        function tryMove(event) {
+            // Find selected brick.
+            var brick = document.getElementById("board").firstChild;
+            while ((!brick.selected)) {
+                brick = brick.nextSibling;
+                if (brick == undefined) return;
+            }
+            // Determine new position.
+            var left = brick.getLeft();
+            var top = brick.getTop();
+            if (event.keyCode == 37) left -= BLOCK_SIZE;
+            if (event.keyCode == 38) top -= BLOCK_SIZE;
+            if (event.keyCode == 39) left += BLOCK_SIZE;
+            if (event.keyCode == 40) top += BLOCK_SIZE;
+            if (!isMoveAllowed(left, top, brick)) return;
+            // Move is OK; do it.
+            brick.style.left = left + "px";
+            brick.style.top = top + "px";
+        }
+
+        // HELP FUNCTIONS
+
+        function isMoveAllowed(newLeft, newTop, brick) {
+            // Check borders.
+            var newRight = (newLeft + brick.getWidth());
+            var newBottom = (newTop + brick.getHeight());
+            if (newLeft < 0 || newRight > (4 * BLOCK_SIZE)) return false;
+            if (newTop < 0 || newBottom > (5 * BLOCK_SIZE)) return false;
+            // Check collisions.
+            var otherBrick = document.getElementById("board").firstChild;
+            while ((otherBrick != undefined)) {
+                // Don't check yourself.
+                if (otherBrick == brick) {
+                    otherBrick = otherBrick.nextSibling;
+                    continue;
+                }
+                // Parse coordinates.
+                var otherLeft = otherBrick.getLeft();
+                var otherRight = otherLeft + otherBrick.getWidth();
+                var otherTop = otherBrick.getTop();
+                var otherBottom = otherTop + otherBrick.getHeight();
+                // Check overlaps.
+                if (isOverlapping(newLeft, newRight, otherLeft, otherRight)) {
+                    if (isOverlapping(newTop, newBottom, otherTop, otherBottom)) return false;
+                }
+                otherBrick = otherBrick.nextSibling;
+            }
+            return true;
+        }
+
+        function isOverlapping(min, max, otherMin, otherMax) {
+            if (otherMin > min && otherMin < max) return true;
+            if (otherMax > min && otherMax < max) return true;
+            if ((otherMin >= min && otherMax <= max) || (otherMin >= min && otherMax <= max)) return true;
+            if ((min >= otherMin && max <= otherMax) || (min >= otherMin && max <= otherMax)) return true;
+            return false;
+        }
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF'.split('');
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.round(Math.random() * 15)];
+            }
+            return color;
+        }
+
+        function checkFileReaderCapability() {
+            if (!window.File && !window.FileReader && !window.FileList && !window.Blob) {
+                alert('The File APIs are not fully supported in this browser.');
+            }
+        }
+
+    </script>
+</head>
+<body>
+
+<div id="board" style="position: absolute; width: 0px; height: 0px; top:0px; left:0px; background-color: white;"></div>
+<input type="file" id="file"/>
+
+<script>
+
+    checkFileReaderCapability();
+    document.getElementById('file').addEventListener('change', prepareBoard, false);
+    document.onkeydown = tryMove;
+
+</script>
+</body>
+</html>

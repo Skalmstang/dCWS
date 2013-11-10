@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript">
+
+        function updateStatus() {
+            var warn = document.getElementById("warn")
+            if (!validateSelection()) warn.innerHTML = "Invalid selection.";
+            else warn.innerHTML = "Valid selection.";
+        }
+        function validateSelection() {
+            // Fetch elements.
+            var elems = [];
+            elems["sprk"] = document.getElementById("sprk");
+            elems["chch"] = document.getElementById("chch");
+            elems["stsy"] = document.getElementById("stsy");
+            elems["bafl"] = document.getElementById("bafl");
+            elems["casa"] = document.getElementById("casa");
+            // Do parsing.
+            if (elems["casa"].checked && elems["stsy"].checked) return false;
+            var checks = 0;
+            for (var elem in elems) {
+                if (elems[elem].checked) checks++;
+            }
+            return checks <= 3;
+        }
+
+        function submit() {
+            if (!validateSelection()) alert("Selection is invalid. Please select a maximum of three toppings while not combining strawberry syrup and caramel sauce.");
+            else {
+                alert("Success!");
+                // Do data base stuff.
+            }
+        }
+
+    </script>
+
+</head>
+<body>
+
+<input type=checkbox onclick="updateStatus()" id="sprk"> Sprinkles </br>
+<input type=checkbox onclick="updateStatus()" id="chch"> Chocolate Chips </br>
+<input type=checkbox onclick="updateStatus()" id="stsy"> Strawberry Syrup </br>
+<input type=checkbox onclick="updateStatus()" id="bafl"> Banana Flakes </br>
+<input type=checkbox onclick="updateStatus()" id="casa"> Caramel Sauce </br>
+<p id="warn"> Valid selection. </p>
+<button onclick="submit()">Submit</button>
+
+</body>
+</html>

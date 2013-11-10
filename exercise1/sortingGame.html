@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script type=text/javascript>
+
+        function setup() {
+            var numList = document.getElementById("numList");
+            // Clear list.
+            while (numList.firstChild) {
+                numList.removeChild(numList.firstChild);
+            }
+            // Initialize elements.
+            for (var i = 0; i < 10; i++) {
+                var elem = document.createElement("p");
+                elem.id = i;
+                elem.draggable = true;
+                elem.ondragover = allowDrop;
+                elem.ondragstart = drag;
+                elem.ondrop = drop;
+                var node = document.createTextNode(Math.round(Math.random() * 10).toString());
+                elem.appendChild(node);
+                numList.appendChild(elem);
+            }
+            updateScoreView();
+        }
+
+        // Drop functionality.
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("Text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            var source = document.getElementById(event.dataTransfer.getData("Text"));
+            var target = event.target;
+            if (indexOfChild(source) > indexOfChild(target)) target.parentNode.insertBefore(source, target);
+            else target.parentNode.insertBefore(source, target.nextSibling);
+            validate();
+        }
+
+        // Win validation.
+        function validate() {
+            var nextChild, child = document.getElementById("numList").firstChild;
+            var next, current = parseInt(child.valueOf().innerHTML)
+            while ((nextChild = child.nextSibling) != null) {
+                var next = parseInt(nextChild.valueOf().innerHTML);
+                if (current < next) return;
+                child = nextChild;
+                current = next;
+            }
+            // Sorting is OK!
+            incrementScore();
+            setup();
+        }
+
+        function incrementScore(){
+            var prevScore = parseInt(localStorage.getItem("wins"));
+            localStorage.setItem("wins", prevScore+1);
+        }
+
+        // Help functions.
+        function indexOfChild(child) {
+            var i = 0;
+            while ((child = child.previousSibling) != null) i++;
+            return i;
+        }
+
+        function updateScoreView(){
+            var view = document.getElementById("score");
+            view.innerHTML = "Score count = " + localStorage.getItem("wins");
+        }
+
+    </script>
+
+</head>
+
+<body onload="setup()">
+
+<script type="text/javascript"> localStorage.setItem("wins",0); </script>
+
+<div id="numList"></div>
+
+<p id="score"></p>
+
+</body>
+</html>
