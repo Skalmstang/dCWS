@@ -62,9 +62,12 @@
             brick.selected = false;
             while (brick != undefined) {
                 brick.selected = false;
+		brick.style.outline = "none";
                 brick = brick.nextSibling
             }
-            event.currentTarget.selected = true;
+            brick = event.currentTarget;
+	    brick.selected = true;
+	    brick.style.outline = "1px solid black";
         }
 
         function tryMove(event) {
