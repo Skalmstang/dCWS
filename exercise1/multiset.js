@@ -22,21 +22,21 @@ function MultiSet() {
         return true;
     }
 
-    this.count = function () {
-        var sum = 0;
-        for (var item in this.map) sum += this.map[item].value;
-        return sum;
+    this.count = function (item) {
+        if (item) {
+            var hashCode = this.calculateUniqueItemHash(item);
+            var entry = this.map[hashCode];
+            return (entry) ? entry.value : 0;
+        } else {
+            var sum = 0;
+            for (var item in this.map) sum += this.map[item].value;
+            return sum;
+        }
     }
 
     this.contains = function (item) {
-        var hash = item.hashCode();
-        var hit = this.map[hash];;
-        // Take duplicates into account.
-        while (hit != undefined) {
-            if (item.equals(hit.key)) return true;
-            hit = this.map[hash++];
-        }
-        return false;
+        var hashCode = this.calculateUniqueItemHash(item);
+        return !!this.map[hashCode];
     }
 
     this.toString = function () {
@@ -53,7 +53,7 @@ function MultiSet() {
         // Take duplicates into account.
         while (hit != undefined) {
             if (item.equals(hit.key)) return hash;
-            hit = this.map[hash++];
+            hit = this.map[++hash];
         }
         return hash;
     }
