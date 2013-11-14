@@ -122,11 +122,9 @@
             if(brick.isPrimary) {
                 // Parse coordinates.
                 var goalLeft = goal.getLeft();
-                var goalTop = goal.getTop();
-                var goalBottom = goalTop + goal.getHeight();
                 // Check overlaps.
-                if (newLeft == goalLeft) {
-                    if (isOverlapping(newTop, newBottom , goalTop, goalBottom)) return true;
+                if (newLeft == goalLeft && overlaps(newLeft, newRight, newBottom, newTop, goal)) {
+                     return true;
                 }
             }
             // Check borders.
@@ -141,17 +139,20 @@
                     continue;
                 }
                 // Parse coordinates.
-                var otherLeft = otherBrick.getLeft();
-                var otherRight = otherLeft + otherBrick.getWidth();
-                var otherTop = otherBrick.getTop();
-                var otherBottom = otherTop + otherBrick.getHeight();
-                // Check overlaps.
-                if (isOverlapping(newLeft, newRight, otherLeft, otherRight)) {
-                    if (isOverlapping(newTop, newBottom, otherTop, otherBottom)) return false;
-                }
+                if (overlaps(newLeft, newRight, newBottom, newTop, otherBrick)) return false;
                 otherBrick = otherBrick.nextSibling;
             }
             return true;
+        }
+
+        function overlaps(newLeft, newRight, newBottom, newTop, otherBrick) {
+            var otherLeft = otherBrick.getLeft();
+            var otherRight = otherLeft + otherBrick.getWidth();
+            var otherTop = otherBrick.getTop();
+            var otherBottom = otherTop + otherBrick.getHeight();
+            // Check overlaps.
+            return isOverlapping(newLeft, newRight, otherLeft, otherRight) && isOverlapping(newTop, newBottom, otherTop, otherBottom);
+
         }
 
         function isOverlapping(min, max, otherMin, otherMax) {
