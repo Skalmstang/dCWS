@@ -53,7 +53,7 @@ function MultiSet() {
         // Take duplicates into account.
         while (hit != undefined) {
             if (item.equals(hit.key)) return hash;
-            hit = this.map[hash++];
+            hit = this.map[++hash];
         }
         return hash;
     }
