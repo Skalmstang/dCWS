@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiset</title>
+    <script type="text/javascript" src="multiset.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    document.write("Creating multiset. Adding Hest 3 times and Birger 5 times<br>");
+    var s = new MultiSet();
+    s.add("Hest");
+    s.add("Hest");
+    s.add("Hest");
+    s.add("Birger");
+    s.add("Birger");
+    s.add("Birger");
+    s.add("Birger");
+    s.add("Birger");
+    document.write("Testing toString(): " + s.toString());
+    document.write("<br>");
+    document.write("<br>");
+
+    document.write("Does set contain \"Hest\": " + s.contains("Hest"));
+    document.write("<br>");
+    document.write("Does set contain \"Birger\": " + s.contains("Birger"));
+    document.write("<br>");
+    document.write("Does set contain \"Birge\": " + s.contains("Birge"));
+    document.write("<br><br>");
+
+
+    document.write("How many in total: " + s.count());
+    document.write("<br>");
+    document.write("How many \"Hest\": " + s.count("Hest"));
+    document.write("<br>");
+    document.write("How many \"Birger\": " + s.count("Birger"));
+    document.write("<br>");
+    document.write("How many \"Birge\": " + s.count("Birge"));
+
+    document.write("<br><br>");
+    document.write("Removing 1 \"Hest\" and 1 \"Birger\"");
+    document.write("<br>");
+    document.write("How many in total: " + s.count());
+    document.write("<br>");
+    document.write("How many \"Hest\": " + s.count("Hest"));
+    document.write("<br>");
+    document.write("How many \"Birger\": " + s.count("Birger"));
+    document.write("<br>");
+    document.write("How many \"Birge\": " + s.count("Birge"));
+    document.write("<br><br>");
+
+    document.write("Testing toString(): " + s.toString());
+</script>
+</body>
+</html>
