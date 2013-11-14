@@ -49,7 +49,7 @@
             var next, current = parseInt(child.valueOf().innerHTML)
             while ((nextChild = child.nextSibling) != null) {
                 var next = parseInt(nextChild.valueOf().innerHTML);
-                if (current < next) return;
+                if (current <= next) return;
                 child = nextChild;
                 current = next;
             }
